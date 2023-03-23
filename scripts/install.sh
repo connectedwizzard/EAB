@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Check if a package is installed
+function is_installed {
+    dpkg -s $1 &> /dev/null
+}
+
 # Main menu
 echo "Please select an option:"
 echo "[1] Install VSCodium"
@@ -10,31 +15,47 @@ read option
 
 case $option in
     1)
-        echo "Installing VSCodium..."
-        sudo apt install curl dirmngr ca-certificates software-properties-common apt-transport-https -y
-        curl -fsSL https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | sudo gpg --dearmor | sudo tee /usr/share/keyrings/vscodium.gpg > /dev/null
-        echo deb [signed-by=/usr/share/keyrings/vscodium.gpg] https://download.vscodium.com/debs vscodium main | sudo tee /etc/apt/sources.list.d/vscodium.list
-        sudo apt install codium -y
-        echo "VSCodium has been installed."
-        sudo codium
+        # Check if VSCodium is already installed
+        if is_installed codium; then
+            echo "VSCodium is already installed."
+        else
+            # Install VSCodium
+            echo "Installing VSCodium..."
+            wget -qO- https://git.io/vscodium-install | bash
+            echo "VSCodium has been installed."
+        fi
         ;;
     2)
-        echo "Installing GIMP..."
-        sudo apt install gimp -y
-        echo "GIMP has been installed."
-		    sudo gimp
+        # Check if GIMP is already installed
+        if is_installed gimp; then
+            echo "GIMP is already installed."
+        else
+            # Install GIMP
+            echo "Installing GIMP..."
+            sudo apt-get install gimp -y
+            echo "GIMP has been installed."
+        fi
         ;;
     3)
-        echo "Installing Apache..."
-        sudo apt install apache2 -y
-        echo "Apache has been installed."
+        # Check if Apache is already installed
+        if is_installed apache2; then
+            echo "Apache is already installed."
+        else
+            # Install Apache
+            echo "Installing Apache..."
+            sudo apt-get install apache2 -y
+            echo "Apache has been installed."
+        fi
         ;;
     4)
+        # Update the system
         echo "Updating system..."
-        sudo apt update && sudo apt upgrade -y
+        sudo apt-get update
+        sudo apt-get upgrade -y
         echo "System has been updated."
         ;;
     *)
+        # Invalid option
         echo "Invalid option."
         ;;
 esac
